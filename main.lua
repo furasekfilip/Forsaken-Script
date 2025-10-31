@@ -122,3 +122,43 @@ end
 for mapName, teleportCFrame in pairs(maps) do
 	createButton(mapName, teleportCFrame)
 end
+
+
+-----------------------------------------------------
+--// MAKE FRAME DRAGGABLE (fixed smooth version)
+-----------------------------------------------------
+local UserInputService = game:GetService("UserInputService")
+
+local dragging = false
+local dragStart, startPos
+
+local function updateDrag(input)
+	local delta = input.Position - dragStart
+	mainFrame.Position = UDim2.new(
+		startPos.X.Scale,
+		startPos.X.Offset + delta.X,
+		startPos.Y.Scale,
+		startPos.Y.Offset + delta.Y
+	)
+end
+
+title.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = mainFrame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+		updateDrag(input)
+	end
+end)
+-----------------------------------------------------
